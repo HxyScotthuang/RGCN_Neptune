@@ -6,6 +6,13 @@ from tqdm import tqdm, trange
 
 from utils import load_data, generate_sampled_graph_and_labels, build_test_graph, calc_mrr
 from models import RGCN
+import neptune.new as neptune
+
+run = neptune.init_run(
+    project="R-NBFNet/CMPNN-Rebuttal",
+    api_token="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiIzNmY3MWNhOS03YjJmLTQzZDUtYmFiMi1jMWRmMThjNDc5ZWMifQ==",
+)  # your credentials
+
 
 def train(train_triplets, model, use_cuda, batch_size, split_size, negative_sample, reg_ratio, num_entities, num_relations):
 
@@ -83,7 +90,11 @@ def main(args):
                 best_mrr = valid_mrr
                 torch.save({'state_dict': model.state_dict(), 'epoch': epoch},
                             'best_mrr_model.pth')
-
+            # logging
+            for key in results.keys():
+      			run[f"valid/{key}"] = results[key]
+            run["valid/mrr"] = valid_mrr
+            ##################
             if use_cuda:
                 model.cuda()
     
@@ -95,7 +106,12 @@ def main(args):
     checkpoint = torch.load('best_mrr_model.pth')
     model.load_state_dict(checkpoint['state_dict'])
 
-    test(test_triplets, model, test_graph, all_triplets)
+    test_mrr,results = test(test_triplets, model, test_graph, all_triplets)
+    # logging
+    for key in results.keys():
+        run[f"valid/{key}"] = results[key]
+    run["valid/mrr"] = test_mrr
+    ##################
 
 if __name__ == '__main__':
 
@@ -118,5 +134,12 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     print(args)
-
+    
+    params = {}
+	for arg in vars(args):
+    		params[f"{arg}"] = getattr(args, arg)
+	params['dataset/class'] = 'RGCN'
+	run["params"] = params
+    
     main(args)
+    run.stop()
