@@ -242,9 +242,11 @@ def calc_mrr(embedding, w, test_triplets, all_triplets, hits=[]):
 
         mrr = torch.mean(1.0 / ranks.float())
         print("MRR (filtered): {:.6f}".format(mrr.item()))
-
+        
+        hits_value = {}
         for hit in hits:
             avg_count = torch.mean((ranks <= hit).float())
             print("Hits (filtered) @ {}: {:.6f}".format(hit, avg_count.item()))
+            hits_value[f"Hits@{hit}"] = avg_count.item()
             
-    return mrr.item()
+    return mrr.item(), hits_value
