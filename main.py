@@ -92,7 +92,7 @@ def main(args):
                             'best_mrr_model.pth')
             # logging
             for key in results.keys():
-      			run[f"valid/{key}"] = results[key]
+      	        run[f"valid/{key}"] = results[key]
             run["valid/mrr"] = valid_mrr
             ##################
             if use_cuda:
@@ -136,10 +136,10 @@ if __name__ == '__main__':
     print(args)
     
     params = {}
-	for arg in vars(args):
-    		params[f"{arg}"] = getattr(args, arg)
-	params['dataset/class'] = 'RGCN'
-	run["params"] = params
+    for arg in vars(args):
+        params[f"{arg}"] = getattr(args, arg)
+    params['dataset/class'] = 'RGCN'
+    run["params"] = params
     
     main(args)
     run.stop()
