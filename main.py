@@ -23,16 +23,16 @@ def train(train_triplets, model, use_cuda, batch_size, split_size, negative_samp
 def valid(valid_triplets, model, test_graph, all_triplets):
 
     entity_embedding = model(test_graph.entity, test_graph.edge_index, test_graph.edge_type, test_graph.edge_norm)
-    mrr = calc_mrr(entity_embedding, model.relation_embedding, valid_triplets, all_triplets, hits=[1, 3, 10])
+    mrr,results = calc_mrr(entity_embedding, model.relation_embedding, valid_triplets, all_triplets, hits=[1, 3, 10])
 
-    return mrr
+    return mrr,results
 
 def test(test_triplets, model, test_graph, all_triplets):
 
     entity_embedding = model(test_graph.entity, test_graph.edge_index, test_graph.edge_type, test_graph.edge_norm)
-    mrr = calc_mrr(entity_embedding, model.relation_embedding, test_triplets, all_triplets, hits=[1, 3, 10])
+    mrr,results = calc_mrr(entity_embedding, model.relation_embedding, test_triplets, all_triplets, hits=[1, 3, 10])
 
-    return mrr
+    return mrr,results
 
 def main(args):
 
@@ -77,7 +77,7 @@ def main(args):
                 model.cpu()
 
             model.eval()
-            valid_mrr = valid(valid_triplets, model, test_graph, all_triplets)
+            valid_mrr,results = valid(valid_triplets, model, test_graph, all_triplets)
             
             if valid_mrr > best_mrr:
                 best_mrr = valid_mrr
@@ -113,7 +113,7 @@ if __name__ == '__main__':
     parser.add_argument("--lr", type=float, default=1e-2)
     parser.add_argument("--n-bases", type=int, default=30)
     
-    parser.add_argument("--regularization", type=float, default=1e-2)
+    parser.add_argument("--regularization", type=float, default=0)
     parser.add_argument("--grad-norm", type=float, default=1.0)
 
     args = parser.parse_args()
