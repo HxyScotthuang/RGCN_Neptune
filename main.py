@@ -41,7 +41,7 @@ def main(args):
         torch.cuda.set_device(args.gpu)
 
     best_mrr = 0
-
+    dataset_path = f'./data/{args.dataset}'
     entity2id, relation2id, train_triplets, valid_triplets, test_triplets = load_data('./data/FB15k-237')
     all_triplets = torch.LongTensor(np.concatenate((train_triplets, valid_triplets, test_triplets)))
 
@@ -107,10 +107,11 @@ if __name__ == '__main__':
     parser.add_argument("--n-epochs", type=int, default=10000)
     parser.add_argument("--evaluate-every", type=int, default=500)
     
+    parser.add_argument("--dataset", default='FB15k-237')
     parser.add_argument("--dropout", type=float, default=0.2)
     parser.add_argument("--gpu", type=int, default=-1)
     parser.add_argument("--lr", type=float, default=1e-2)
-    parser.add_argument("--n-bases", type=int, default=4)
+    parser.add_argument("--n-bases", type=int, default=30)
     
     parser.add_argument("--regularization", type=float, default=1e-2)
     parser.add_argument("--grad-norm", type=float, default=1.0)
