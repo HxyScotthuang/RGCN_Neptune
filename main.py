@@ -49,7 +49,7 @@ def main(args):
 
     best_mrr = 0
     dataset_path = f'./data/{args.dataset}'
-    entity2id, relation2id, train_triplets, valid_triplets, test_triplets = load_data('./data/FB15k-237')
+    entity2id, relation2id, train_triplets, valid_triplets, test_triplets = load_data(dataset_path)
     all_triplets = torch.LongTensor(np.concatenate((train_triplets, valid_triplets, test_triplets)))
 
     test_graph = build_test_graph(len(entity2id), len(relation2id), train_triplets)
@@ -84,8 +84,8 @@ def main(args):
                 model.cpu()
 
             model.eval()
-            valid_mrr,results = valid(valid_triplets, model, test_graph, all_triplets)
-            
+            valid_mrr,results = valid(valid_triplets, model, test_graph, all_triplets) # Need 64G memory
+
             if valid_mrr > best_mrr:
                 best_mrr = valid_mrr
                 torch.save({'state_dict': model.state_dict(), 'epoch': epoch},
@@ -138,7 +138,7 @@ if __name__ == '__main__':
     params = {}
     for arg in vars(args):
         params[f"{arg}"] = getattr(args, arg)
-    params['dataset/class'] = 'RGCN'
+    params['model'] = 'RGCN'
     run["params"] = params
     
     main(args)
