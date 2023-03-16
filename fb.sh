@@ -12,4 +12,4 @@ module load Anaconda3
 source activate $DATA/myenv
 
 
-python main.py --negative-sample 32 --n-epochs 200 --dataset FB15k-237 --gpu 0 --n-bases 30 
+python main.py --negative-sample 32 --dataset FB15k-237 --gpu 0 --n-bases 30 
