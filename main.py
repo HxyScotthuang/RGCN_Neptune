@@ -51,7 +51,6 @@ def main(args):
     dataset_path = f'./data/{args.dataset}'
     entity2id, relation2id, train_triplets, valid_triplets, test_triplets = load_data(dataset_path)
     all_triplets = torch.LongTensor(np.concatenate((train_triplets, valid_triplets, test_triplets)))
-
     test_graph = build_test_graph(len(entity2id), len(relation2id), train_triplets)
     valid_triplets = torch.LongTensor(valid_triplets)
     test_triplets = torch.LongTensor(test_triplets)
@@ -92,8 +91,8 @@ def main(args):
                             'best_mrr_model.pth')
             # logging
             for key in results.keys():
-      	        run[f"valid/{key}"] = results[key]
-            run["valid/mrr"] = valid_mrr
+      	        run[f"test/{key}"] = results[key]
+            run["test/mrr"] = valid_mrr
             ##################
             if use_cuda:
                 model.cuda()
